@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="upgrade-insecure-requests"
+    />
+    <link rel="icon" type="image/svg+xml" href="/public/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Therapex</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css"
+    />
+
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="chat_container">
+        <% if (userLocation) { %>
+        <div class="wrapper">
+          <div class="chat">
+            <div class="message" id="location">
+              <p>
+                Your Location: <%= userLocation.city %>, <%= userLocation.region
+                %>, <%= userLocation.country %>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <% } else { %>
+        <p>Location information not available.</p>
+        <% } %>
+      </div>
+
+      <form>
+        <textarea
+          name="prompt"
+          cols="1"
+          rows="1"
+          placeholder="Chat with Therapex"
+        ></textarea>
+        <button type="submit"><img src="/media/send.svg" alt="" /></button>
+      </form>
+    </div>
+    <script type="module" src="/js/script.js"></script>
+
+    <script>
+      // TEXT TO SPEECH
+
+      let audio;
+      let isPlaying = false;
+
+      async function textToSpeech(button) {
+        if (isPlaying) return;
+        const parentDiv = button.parentNode;
+        const text = parentDiv.textContent;
+        console.log(text);
+        button.classList.add("ri-stop-fill");
+        button.classList.remove("ri-volume-up-line");
+        button.setAttribute("onclick", "stopSpeech(this)");
+
+        isPlaying = true;
+
+        const response = await fetch("http://localhost:3000/api/speech", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ msgText: text }),
+        }).catch((e) => console.log(e));
+
+        // Create a Blob object from the response data
+        const blob = await response.blob();
+
+        // Create a URL for the Blob object
+        const url = URL.createObjectURL(blob);
+
+        // Create an Audio element and set its src attribute to the URL
+        audio = new Audio(url);
+
+        audio.addEventListener("ended", () => {
+          isPlaying = false;
+          button.classList.add("ri-volume-up-line");
+          button.classList.remove("ri-stop-fill");
+          button.setAttribute("onclick", "textToSpeech(this)");
+        });
+
+        // Call the play method to start playing the audio
+        audio.play();
+      }
+
+      function stopSpeech(button) {
+        button.classList.add("ri-volume-up-line");
+        button.classList.remove("ri-stop-fill");
+        button.setAttribute("onclick", "textToSpeech(this)");
+        audio.pause(); // pause each audio element
+        audio.currentTime = 0; // reset the playback time to the beginning
+
+        isPlaying = false;
+      }
+    </script>
+  </body>
+</html>
