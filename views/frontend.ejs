@@ -10,6 +10,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Therapex</title>
     <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css"
+    />
+    <link
       href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css"
       rel="stylesheet"
     />
@@ -19,25 +23,25 @@
     />
 
     <link rel="stylesheet" href="/css/styles.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   </head>
   <body>
     <div id="app">
       <div id="chat_container">
-        <% if (userLocation) { %>
         <div class="wrapper">
           <div class="chat">
             <div class="message" id="location">
               <p>
-                Your Location: <%= userLocation.city %>, <%= userLocation.region
-                %>, <%= userLocation.country %>
+                Please take a look at out privacy policy:
+                <a style="color: whitesmoke" target="_blank" href="/privacy"
+                  >Here</a
+                >
               </p>
             </div>
           </div>
         </div>
-
-        <% } else { %>
-        <p>Location information not available.</p>
-        <% } %>
       </div>
 
       <form>
@@ -106,6 +110,14 @@
 
         isPlaying = false;
       }
+
+      // TEXT ANIMATION
+      const swiftUpElements = document.querySelectorAll(".swift-up-text");
+
+      const children = document.querySelectorAll("span > i");
+      children.forEach((node, index) => {
+        node.style.animationDelay = `${index * 0.5}s`;
+      });
     </script>
   </body>
 </html>
