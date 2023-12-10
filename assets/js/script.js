@@ -219,7 +219,7 @@ const handleSubmit = async (e) => {
       let newData = parsedData.replace("LINK:", "").trim();
 
       // Define a regular expression to match the link
-      const linkRegex = /(http:\/\/[^ ]+)/;
+      const linkRegex = /(https:\/\/[^ ]+)/;
       const linkMatch = newData.match(linkRegex);
 
       // Check if a link match is found
@@ -240,7 +240,9 @@ const handleSubmit = async (e) => {
 
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        return;
+        if (!parsedData.includes("HELP5587")) {
+          return;
+        }
       } else {
         console.log("No valid link found in the bot output");
       }
@@ -283,45 +285,50 @@ const handleSubmit = async (e) => {
         } else {
           console.error("Geolocation is not supported by this browser.");
         }
-        return;
       }
     }
+
+    let timerIsActive = false;
+
     if (parsedData.includes("HELP5587")) {
       parsedData = parsedData.replace("HELP5587", "").trim();
       messageDiv.innerHTML = parsedData;
       isFetching = false;
       console.log("Timer Triggered");
+
       const triggerTime = 5 * 60 * 1000; // 5 minutes in milliseconds
-      setTimeout(() => {
-        // specific message div
-        console.log(isFetching);
-        console.log("Timer is finished!");
 
-        if (!isFetching) {
-          showForm();
-        } else {
-          // Check the condition at intervals until it becomes false
-          const intervalId = setInterval(() => {
-            if (!isFetching) {
-              showForm();
-              clearInterval(intervalId); // Stop checking once the condition is false
-            }
-          }, 2000); // Check every 2 second
-        }
+      if (!timerIsActive) {
+        setTimeout(() => {
+          // specific message div
+          console.log(isFetching);
+          console.log("Timer is finished!");
 
-        function showForm() {
-          const uniqueId = generateUniqueId();
-          chatContainer.innerHTML += chatStripe(true, " ", uniqueId);
+          if (!isFetching) {
+            showForm();
+          } else {
+            // Check the condition at intervals until it becomes false
+            const intervalId = setInterval(() => {
+              if (!isFetching) {
+                showForm();
+                clearInterval(intervalId); // Stop checking once the condition is false
+              }
+            }, 2000); // Check every 2 second
+          }
 
-          chatContainer.scrollTop = chatContainer.scrollHeight;
+          function showForm() {
+            const uniqueId = generateUniqueId();
+            chatContainer.innerHTML += chatStripe(true, " ", uniqueId);
 
-          const formDiv = document.getElementById(uniqueId);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-          formDiv.innerHTML = "";
+            const formDiv = document.getElementById(uniqueId);
 
-          formDiv.innerHTML += `Hey there! Please Enter your Phone number so we can give you extra help 🙂`;
+            formDiv.innerHTML = "";
 
-          formDiv.innerHTML += `<form id="login">
+            formDiv.innerHTML += `Hey there! Please Enter your Phone number so we can give you extra help 🙂`;
+
+            formDiv.innerHTML += `<form id="login">
           <p>Enter your phone number:</p>
           <input id="phone" type="tel" name="phone" maxlength="16" />
           <input type="submit" id="btn" class="btn" value="Verify" />
@@ -330,100 +337,103 @@ const handleSubmit = async (e) => {
         </form>
        `;
 
-          const input = document.querySelector("#phone");
-          const button = document.querySelector("#btn");
-          const errorMsg = document.querySelector("#error-msg");
-          const validMsg = document.querySelector("#valid-msg");
+            const input = document.querySelector("#phone");
+            const button = document.querySelector("#btn");
+            const errorMsg = document.querySelector("#error-msg");
+            const validMsg = document.querySelector("#valid-msg");
 
-          const errorMap = [
-            "Invalid number",
-            "Invalid country code",
-            "Too short",
-            "Too long",
-            "Invalid number",
-          ];
+            const errorMap = [
+              "Invalid number",
+              "Invalid country code",
+              "Too short",
+              "Too long",
+              "Invalid number",
+            ];
 
-          const phoneInput = window.intlTelInput(input, {
-            preferredCountries: ["us", "ca"],
-            utilsScript:
-              "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-          });
+            const phoneInput = window.intlTelInput(input, {
+              preferredCountries: ["us", "ca"],
+              utilsScript:
+                "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+            });
 
-          const form = document.getElementById("login");
+            const form = document.getElementById("login");
 
-          var phoneField = document.getElementById("phone");
+            var phoneField = document.getElementById("phone");
 
-          const reset = () => {
-            if (event && event.type === "keyup" && event.key === "Enter") {
-              return;
-            }
-
-            input.classList.remove("error");
-            errorMsg.innerHTML = "";
-            errorMsg.classList.add("hide");
-            validMsg.classList.add("hide");
-          };
-
-          var numberState = false;
-
-          const validateNumber = (event) => {
-            event.preventDefault;
-
-            reset();
-            if (input.value.trim()) {
-              if (phoneInput.isValidNumber()) {
-                validMsg.classList.remove("hide");
-                numberState = true;
-              } else {
-                numberState = false;
-                input.classList.add("error");
-                const errorCode = phoneInput.getValidationError();
-                errorMsg.innerHTML = errorMap[errorCode];
-                errorMsg.classList.remove("hide");
+            const reset = () => {
+              if (event && event.type === "keyup" && event.key === "Enter") {
+                return;
               }
-            }
-          };
-          // on click button: validate the number
-          button.addEventListener("click", validateNumber);
 
-          // on keyup / change flag: reset
-          input.addEventListener("change", reset);
-          input.addEventListener("keyup", reset);
+              input.classList.remove("error");
+              errorMsg.innerHTML = "";
+              errorMsg.classList.add("hide");
+              validMsg.classList.add("hide");
+            };
 
-          form.addEventListener("submit", validateNumber);
+            var numberState = false;
 
-          document.addEventListener("submit", async function (event) {
-            if (
-              event.target &&
-              event.target.tagName.toLowerCase() === "form" &&
-              event.target.id === "login"
-            ) {
-              event.preventDefault();
+            const validateNumber = (event) => {
+              event.preventDefault;
 
-              console.log("I got clicked");
+              reset();
+              if (input.value.trim()) {
+                if (phoneInput.isValidNumber()) {
+                  validMsg.classList.remove("hide");
+                  numberState = true;
+                } else {
+                  numberState = false;
+                  input.classList.add("error");
+                  const errorCode = phoneInput.getValidationError();
+                  errorMsg.innerHTML = errorMap[errorCode];
+                  errorMsg.classList.remove("hide");
+                }
+              }
+            };
+            // on click button: validate the number
+            button.addEventListener("click", validateNumber);
 
-              const phoneNumber = phoneInput.getNumber();
+            // on keyup / change flag: reset
+            input.addEventListener("change", reset);
+            input.addEventListener("keyup", reset);
 
-              console.log("The phone Number" + phoneNumber);
+            form.addEventListener("submit", validateNumber);
 
-              if (numberState === true) {
-                formDiv.innerHTML = "";
-                formDiv.innerHTML = `<span><i>You<span><i> <span><i>are<span><i> <span><i>Loved<span><i>. <span><i>You<span><i> <span><i>are<span><i> <span><i>Cared<span><i> <span><i>For<span><i>`;
-                const response = await fetch("http://localhost:3000/send-otp", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    phoneNumber: phoneNumber,
-                  }),
-                });
+            document.addEventListener("submit", async function (event) {
+              if (
+                event.target &&
+                event.target.tagName.toLowerCase() === "form" &&
+                event.target.id === "login"
+              ) {
+                event.preventDefault();
 
-                if (response.ok) {
-                  const json = await response.json();
-                  if (json.success) {
-                    formDiv.innerHTML = `A code was sent to your phone number, please verify it`;
-                    formDiv.innerHTML += `
+                console.log("I got clicked");
+
+                const phoneNumber = phoneInput.getNumber();
+
+                console.log("The phone Number" + phoneNumber);
+
+                if (numberState === true) {
+                  formDiv.innerHTML = "";
+                  formDiv.innerHTML = `<span><i>You<span><i> <span><i>are<span><i> <span><i>Loved<span><i>. <span><i>You<span><i> <span><i>are<span><i> <span><i>Cared<span><i> <span><i>For<span><i>`;
+                  const response = await fetch(
+                    "http://localhost:3000/send-otp",
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        phoneNumber: phoneNumber,
+                      }),
+                    }
+                  );
+
+                  if (response.ok) {
+                    const json = await response.json();
+                    if (json.success) {
+                      formDiv.innerHTML = `A code was sent to your phone number, please verify it`;
+                      formDiv.innerHTML += `
                   <form id="verifyForm">
                   <p>Enter the code sent to your phone:</p>
                   <input id="otp" name="OTP" maxlength="6" />
@@ -431,70 +441,70 @@ const handleSubmit = async (e) => {
                   <span id="valid-msg" class="hide">✓ Valid</span>
                   <span id="error-msg" class="hide"></span>
                 </form>`;
-                  }
-                } else if (response.status === 500) {
-                  const json = await response.json();
-                  if (json.success === false) {
-                    console.log(json);
-                    formDiv.innerHTML =
-                      "An error occured. Failed to send OTP. In the meantime, you can continue chatting with Therapex!";
-                  }
-                } else if (response.status === 400) {
-                  const json = await response.json();
-                  if (json.error) {
-                    formDiv.innerHTML =
-                      "Your phone number is already verified, you can continue chatting with Therapex!";
+                    }
+                  } else if (response.status === 500) {
+                    const json = await response.json();
+                    if (json.success === false) {
+                      console.log(json);
+                      formDiv.innerHTML =
+                        "An error occured. Failed to send OTP. In the meantime, you can continue chatting with Therapex!";
+                    }
+                  } else if (response.status === 400) {
+                    const json = await response.json();
+                    if (json.error) {
+                      formDiv.innerHTML =
+                        "Your phone number is already verified, you can continue chatting with Therapex!";
+                    }
                   }
                 }
               }
-            }
-          });
+            });
 
-          formDiv.addEventListener("submit", async function (event) {
-            // Check if the submitted form is the verifyForm
-            if (event.target && event.target.id === "verifyForm") {
-              const otpInput = document.getElementById("otp");
+            formDiv.addEventListener("submit", async function (event) {
+              // Check if the submitted form is the verifyForm
+              if (event.target && event.target.id === "verifyForm") {
+                const otpInput = document.getElementById("otp");
 
-              event.preventDefault();
+                event.preventDefault();
 
-              const otpNumber = otpInput.value.trim();
+                const otpNumber = otpInput.value.trim();
 
-              if (otpNumber.length === 6) {
-                formDiv.innerHTML = `<span><i>You<span><i> <span><i>are<span><i> <span><i>Loved<span><i>. <span><i>You<span><i> <span><i>are<span><i> <span><i>Cared<span><i> <span><i>For<span><i>`;
+                if (otpNumber.length === 6) {
+                  formDiv.innerHTML = `<span><i>You<span><i> <span><i>are<span><i> <span><i>Loved<span><i>. <span><i>You<span><i> <span><i>are<span><i> <span><i>Cared<span><i> <span><i>For<span><i>`;
 
-                const response = await fetch(
-                  "http://localhost:3000/verify-otp",
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      otp: `${otpNumber}`,
-                    }),
-                  }
-                );
+                  const response = await fetch(
+                    "http://localhost:3000/verify-otp",
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        otp: `${otpNumber}`,
+                      }),
+                    }
+                  );
 
-                if (response.ok) {
-                  formDiv.innerHTML = "";
-                  formDiv.innerHTML =
-                    "Your phone Number has been verified successfully. Continue chatting with Therapex 🙂";
-                } else if (response.status === 500) {
-                  const json = await response.json();
-                  if (json.success === false) {
-                    console.log(json);
+                  if (response.ok) {
+                    formDiv.innerHTML = "";
                     formDiv.innerHTML =
-                      "An error occured. Failed to verify OTP. In the meantime, you can continue chatting with Therapex!";
-                  }
-                } else if (response.status === 400) {
-                  const json = await response.json();
-                  if (json.error) {
-                    formDiv.innerHTML =
-                      "Your phone number is already verified, you can continue chatting with Therapex!";
-                  }
-                } else if (response.status === 401) {
-                  formDiv.innerHTML = "Invalid OTP, please try again";
-                  formDiv.innerHTML += `
+                      "Your phone Number has been verified successfully. Continue chatting with Therapex 🙂";
+                  } else if (response.status === 500) {
+                    const json = await response.json();
+                    if (json.success === false) {
+                      console.log(json);
+                      formDiv.innerHTML =
+                        "An error occured. Failed to verify OTP. In the meantime, you can continue chatting with Therapex!";
+                    }
+                  } else if (response.status === 400) {
+                    const json = await response.json();
+                    if (json.error) {
+                      formDiv.innerHTML =
+                        "Your phone number is already verified, you can continue chatting with Therapex!";
+                    }
+                  } else if (response.status === 401) {
+                    formDiv.innerHTML = "Invalid OTP, please try again";
+                    formDiv.innerHTML += `
                 <form id="verifyForm">
             <p>Enter the code sent to your phone:</p>
             <input id="otp" name="OTP" maxlength="6" />
@@ -502,12 +512,17 @@ const handleSubmit = async (e) => {
             <span id="valid-msg" class="hide">✓ Valid</span>
             <span id="error-msg" class="hide"></span>
           </form>`;
+                  }
                 }
               }
-            }
-          });
-        }
-      }, triggerTime);
+            });
+          }
+
+          timerIsActive = false;
+        }, triggerTime);
+      }
+
+      timerIsActive = true;
       return;
     } else {
       isFetching = false; // Set to false when fetch completes
