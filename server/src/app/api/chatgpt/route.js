@@ -19,7 +19,7 @@ import { MemoryManager } from "../../utils/memory.js";
 
 import { rateLimit } from "../../../app/utils/rateLimit.js";
 
-import OtpModel from "../../../../server/models/otpModel.js";
+import OtpModel from "../../../../models/otpModel.js";
 
 import path from "path";
 
