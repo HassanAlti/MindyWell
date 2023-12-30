@@ -49,9 +49,6 @@ const client = twilio(
 
 app.use(cors());
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-const rootDir = path.resolve(__dirname, "../../../../");
-
 app.use(
   session({
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
