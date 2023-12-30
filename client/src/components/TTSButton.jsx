@@ -13,7 +13,7 @@ const TTSButton = ({ botResponse }) => {
     setIsPlaying(true);
     // Fetch the speech audio from the server
     try {
-      const response = await fetch("http://localhost:4242/api/speech", {
+      const response = await fetch("http://localhost/api/speech", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

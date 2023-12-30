@@ -16,7 +16,7 @@ const NavContent = ({
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:4242/api/keys", {
+      const response = await fetch("http://localhost/api/keys", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

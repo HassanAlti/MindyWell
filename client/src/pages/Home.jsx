@@ -77,7 +77,7 @@ const Home = () => {
     } else {
       const fetchUserId = async () => {
         try {
-          const response = await fetch("http://localhost:4242/api/getId", {
+          const response = await fetch("http://localhost/api/getId", {
             method: "GET",
             headers: { "Content-Type": "application/json" },
           });
@@ -152,7 +152,7 @@ const Home = () => {
   async function callAPI(question) {
     try {
       setFollowUpQuestions([]);
-      const response = await fetch("http://localhost:4242/api/chat", {
+      const response = await fetch("http://localhost/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json", name: "mindywell" },
         body: JSON.stringify({
@@ -187,7 +187,7 @@ const Home = () => {
       setErr(err);
       console.log(err);
     }
-    const followUpResponse = await fetch("http://localhost:4242/api/followup", {
+    const followUpResponse = await fetch("http://localhost/api/followup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

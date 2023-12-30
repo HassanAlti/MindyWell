@@ -3,8 +3,6 @@ services:
   server:
     build:
       context: ./server
-    ports:
-      - "3000:3000"
     depends_on:
       - mongodb
       - redis
@@ -17,6 +15,8 @@ services:
       context: ./client
     ports:
       - "80:80"
+    depends_on:
+      - server
 
   mongodb:
     image: mongo
