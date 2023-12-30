@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+      - redis
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/yourdbname
+      - REDIS_URL=redis://redis:6379
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "80:80"
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
