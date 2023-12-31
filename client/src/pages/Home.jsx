@@ -315,7 +315,7 @@ const Home = () => {
             const { latitude, longitude } = position.coords;
             try {
               const geoResponse = await fetch(
-                `http://localhost:4242/user-location?latitude=${latitude}&longitude=${longitude}`,
+                `http://localhost:4242/api/user-location?latitude=${latitude}&longitude=${longitude}`,
                 {
                   method: "POST",
                 }
