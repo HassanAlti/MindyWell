@@ -341,7 +341,7 @@ app.post("/api/speech", async (req, res) => {
 });
 
 // Route To Send OTP
-app.post("/send-otp", async (req, res) => {
+app.post("/api/send-otp", async (req, res) => {
   console.log("Send otp was called");
   const phoneNumber = req.body.phoneNumber;
 
@@ -383,7 +383,7 @@ app.post("/send-otp", async (req, res) => {
 });
 
 // Route to verify OTP
-app.post("/verify-otp", async (req, res) => {
+app.post("/api/verify-otp", async (req, res) => {
   const { otp, phoneNumber } = req.body;
 
   console.log(phoneNumber);
@@ -414,7 +414,7 @@ app.post("/verify-otp", async (req, res) => {
   }
 });
 
-app.post("/user-location", async (req, res) => {
+app.post("/api/user-location", async (req, res) => {
   const { latitude, longitude } = req.query;
   console.log("Received user location:", { latitude, longitude });
 
