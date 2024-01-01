@@ -185,24 +185,29 @@ const Home = () => {
       setErr(err);
       console.log(err);
     }
-    const followUpResponse = await fetch("http://localhost/api/followup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullKey: currentChat,
-      }),
-    });
 
-    const followUpData = await followUpResponse.json();
-    let follows = followUpData.followup;
+    try {
+      const followUpResponse = await fetch("http://localhost/api/followup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullKey: currentChat,
+        }),
+      });
 
-    if (chatLog.length > 10 && !isMatched) {
-      follows[3] = "Match me with a mental health proffesional";
+      const followUpData = await followUpResponse.json();
+      let follows = followUpData.followup;
+
+      if (chatLog.length > 10 && !isMatched) {
+        follows[3] = "Match me with a mental health proffesional";
+      }
+
+      setFollowUpQuestions(follows);
+
+      setReponseFromAPI(false);
+    } catch (e) {
+      console.error(e);
     }
-
-    setFollowUpQuestions(follows);
-
-    setReponseFromAPI(false);
   }
 
   const handleSubmit = async (e) => {

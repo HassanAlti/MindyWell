@@ -33,16 +33,63 @@ const NavContent = ({
 
         if (currentChat === "") {
           setCurrentChat(data[0]);
+
+          try {
+            const response = await fetch(
+              "http://localhost/api/retrieve-chats",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ fullKey: data[0].key }),
+              }
+            );
+
+            if (!response.ok) {
+              setChatLog([]);
+              throw new Error("Network response was not ok");
+            } else {
+              // Set chatLog with the response data
+              const responseData = await response.json();
+              const chats = responseData.chats;
+
+              // Iterate over bot messages and remove specified words and links
+              const transformedChats = chats.map((chat) => {
+                if (chat.botMessage) {
+                  // Remove specified words
+                  chat.botMessage = chat.botMessage.replace(
+                    /CODE99023|HELP5587|LINK:/g,
+                    ""
+                  );
+
+                  // Remove links using the linkRegex
+                  const linkRegex = /(http:\/\/[^ ]+)/;
+
+                  chat.botMessage = chat.botMessage.replace(linkRegex, "");
+
+                  // Trim any extra spaces
+                  chat.botMessage = chat.botMessage.trim();
+                }
+                return chat;
+              });
+
+              setChatLog(transformedChats);
+            }
+          } catch (error) {
+            console.error("Error fetching link:", error);
+          }
         }
+      } else {
+        const currentDate = Date.now();
+        const key = `${currentDate}-${userId}-mindywell`;
+        const newConvo = {
+          date: currentDate,
+          key: key,
+        };
+        setConvoHistory((prevConvoHistory) => [newConvo, ...prevConvoHistory]);
+        setCurrentChat(key);
       }
-      const currentDate = Date.now();
-      const key = `${currentDate}-${userId}-mindywell`;
-      const newConvo = {
-        date: currentDate,
-        key: key,
-      };
-      setConvoHistory((prevConvoHistory) => [newConvo, ...prevConvoHistory]);
-      setCurrentChat(key);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -63,8 +110,9 @@ const NavContent = ({
         setFollowUpQuestions={setFollowUpQuestions}
       />
       <div className="navPromptWrapper">
-        {convoHistory.map((convo) => (
+        {convoHistory.map((convo, index) => (
           <NavPrompt
+            // isPresent={index === 0 ? true : false}
             chatPrompt={convo.date}
             setShowMenu={setShowMenu}
             key={convo.key}
