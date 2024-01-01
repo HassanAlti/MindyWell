@@ -58,9 +58,7 @@ const Home = () => {
       // No existing location, fetch IP location and store it
       (async () => {
         try {
-          const response = await fetch(
-            "http://localhost:4242/api/get-ip-location"
-          );
+          const response = await fetch("http://localhost/api/get-ip-location");
           const data = await response.json();
           const locationStr = `${data.country}, ${data.region}, ${data.city}`;
           saveLocationToLocalStorage(locationStr, "iplocation");
@@ -225,7 +223,7 @@ const Home = () => {
     setInputPrompt("");
   };
 
-  const recommend = async (link, onRecommendationFetched) => {
+  const recommend = async (link) => {
     const location = JSON.parse(localStorage.getItem("userLocation"));
 
     try {
@@ -243,14 +241,16 @@ const Home = () => {
       if (response.ok) {
         const json = await response.json();
         const text = json.text.trim();
-        onRecommendationFetched(text);
+        return text; // Just return the text
       } else {
         const err = await response.text();
         // Handle error (instead of alert)
         console.error(err);
+        return Promise.reject(err); // Reject the promise if there's an error
       }
     } catch (error) {
       console.error("Something went wrong", error);
+      return Promise.reject(error); // Return a rejected promise
     }
   };
 
@@ -260,13 +260,13 @@ const Home = () => {
     if (parsedData.includes("LINK:")) {
       // Extract the link and related data from the bot response
       let newData = parsedData.replace("LINK:", "").trim();
-      const linkRegex = /(http:\/\/[^ ]+)/;
+      const linkRegex = /(http:\/\/[^ ]+)(?=\s|$)/;
       const linkMatch = newData.match(linkRegex);
 
       if (linkMatch && linkMatch[0]) {
         const link = linkMatch[0];
         console.log("Found link:", link);
-        newData = newData.replace(linkRegex, "").trim();
+        newData = newData.replace(linkRegex, "Loading...").trim();
 
         setChatLog([
           ...chatLog,
@@ -276,18 +276,27 @@ const Home = () => {
           },
         ]);
 
-        await recommend(link, (recommendation) => {
+        try {
+          // Await the recommendation result from the recommend function
+          const recommendation = await recommend(link);
           console.log(recommendation);
           setIsMatched(true);
-          setChatLog([
-            ...chatLog,
-            {
+          const recommendText = newData.replace(
+            "Loading...",
+            "\n" + recommendation + "\n"
+          );
+          setChatLog((prevChatLog) => {
+            const updatedChatLog = prevChatLog.slice(0, -1);
+            updatedChatLog.push({
               containsLink: true,
               chatPrompt: question,
-              botMessage: newData + recommendation,
-            },
-          ]);
-        });
+              botMessage: recommendText,
+            });
+            return updatedChatLog;
+          });
+        } catch (err) {
+          console.error("Failed to get recommendation:", err);
+        }
       } else {
         console.log("No valid link found in the bot output");
       }
@@ -315,7 +324,7 @@ const Home = () => {
             const { latitude, longitude } = position.coords;
             try {
               const geoResponse = await fetch(
-                `http://localhost:4242/api/user-location?latitude=${latitude}&longitude=${longitude}`,
+                `http://localhost/api/user-location?latitude=${latitude}&longitude=${longitude}`,
                 {
                   method: "POST",
                 }

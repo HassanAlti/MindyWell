@@ -44,7 +44,7 @@ const PhoneNumberForm = ({ setShowForm }) => {
 
         setLoading(true);
 
-        const response = await fetch("http://localhost:4242/api/send-otp", {
+        const response = await fetch("http://localhost/api/send-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -102,7 +102,7 @@ const PhoneNumberForm = ({ setShowForm }) => {
 
         setLoading(true);
 
-        const response = await fetch("http://localhost:4242/api/verify-otp", {
+        const response = await fetch("http://localhost/api/verify-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
