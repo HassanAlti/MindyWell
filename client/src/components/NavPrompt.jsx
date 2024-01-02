@@ -23,7 +23,7 @@ const NavPrompt = ({
     setFollowUpQuestions([]);
 
     try {
-      const response = await fetch("http://localhost/api/retrieve-chats", {
+      const response = await fetch("/api/retrieve-chats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

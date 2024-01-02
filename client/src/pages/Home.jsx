@@ -58,7 +58,7 @@ const Home = () => {
       // No existing location, fetch IP location and store it
       (async () => {
         try {
-          const response = await fetch("http://localhost/api/get-ip-location");
+          const response = await fetch("/api/get-ip-location");
           const data = await response.json();
           const locationStr = `${data.country}, ${data.region}, ${data.city}`;
           saveLocationToLocalStorage(locationStr, "iplocation");
@@ -75,7 +75,7 @@ const Home = () => {
     } else {
       const fetchUserId = async () => {
         try {
-          const response = await fetch("http://localhost/api/getId", {
+          const response = await fetch("/api/getId", {
             method: "GET",
             headers: { "Content-Type": "application/json" },
           });
@@ -150,7 +150,7 @@ const Home = () => {
   async function callAPI(question) {
     try {
       setFollowUpQuestions([]);
-      const response = await fetch("http://localhost/api/chat", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json", name: "mindywell" },
         body: JSON.stringify({
@@ -187,7 +187,7 @@ const Home = () => {
     }
 
     try {
-      const followUpResponse = await fetch("http://localhost/api/followup", {
+      const followUpResponse = await fetch("/api/followup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -329,7 +329,7 @@ const Home = () => {
             const { latitude, longitude } = position.coords;
             try {
               const geoResponse = await fetch(
-                `http://localhost/api/user-location?latitude=${latitude}&longitude=${longitude}`,
+                `/api/user-location?latitude=${latitude}&longitude=${longitude}`,
                 {
                   method: "POST",
                 }

@@ -16,7 +16,7 @@ const NavContent = ({
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost/api/keys", {
+      const response = await fetch("/api/keys", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,16 +35,13 @@ const NavContent = ({
           setCurrentChat(data[0]);
 
           try {
-            const response = await fetch(
-              "http://localhost/api/retrieve-chats",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ fullKey: data[0].key }),
-              }
-            );
+            const response = await fetch("/api/retrieve-chats", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ fullKey: data[0].key }),
+            });
 
             if (!response.ok) {
               setChatLog([]);
