@@ -5,8 +5,6 @@ const TTSButton = ({ botResponse }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState(null);
 
-  console.log(botResponse);
-
   const startSpeech = async () => {
     if (isPlaying) return;
 

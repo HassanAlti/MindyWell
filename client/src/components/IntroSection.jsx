@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Suggest from "./Suggest";
+import PhoneNumberForm from "./PhoneNumberForm";
 
-const IntroSection = ({ onSuggestionClick, currentChat }) => {
-  const firstPart = "Introducing MindyWell";
+const IntroSection = ({
+  onSuggestionClick,
+  currentChat,
+  showForm,
+  setShowForm,
+}) => {
+  const firstPart = "Introducing MindyWell - ";
   const [secondPart, setSecondPart] = useState("");
   const [isPrinting, setIsPrinting] = useState(true);
 
   useEffect(() => {
     let index = 1;
-    const message = " - The Ultimate Mental Health Guide";
+    const message = "The Ultimate Mental Health Guide";
     const intervalId = setInterval(() => {
       if (!isPrinting) {
         clearInterval(intervalId);
@@ -34,10 +40,14 @@ const IntroSection = ({ onSuggestionClick, currentChat }) => {
 
       <img className="avatarImg" alt="" />
 
-      <Suggest
-        onSuggestionClick={onSuggestionClick}
-        currentChat={currentChat}
-      />
+      {showForm ? (
+        <PhoneNumberForm setShowForm={setShowForm} />
+      ) : (
+        <Suggest
+          onSuggestionClick={onSuggestionClick}
+          currentChat={currentChat}
+        />
+      )}
     </div>
   );
 };

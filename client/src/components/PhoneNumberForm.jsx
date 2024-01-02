@@ -3,7 +3,7 @@ import "intl-tel-input/build/css/intlTelInput.css";
 import "../phone.css"; // Make sure this path is correct for your styles
 import ReactIntlTelInput from "react-intl-tel-input-v2";
 
-const PhoneNumberForm = ({ setShowForm }) => {
+const PhoneNumberForm = ({ setShowForm, setDisableInteraction }) => {
   const [phoneInputValue, setPhoneInputValue] = useState({});
   const [otpSent, setOtpSent] = useState(false);
   const [phoneAlreadyVerified, setPhoneAlreadyVerified] = useState(false);
@@ -58,15 +58,24 @@ const PhoneNumberForm = ({ setShowForm }) => {
           // Store the updated object back into localStorage
           localStorage.setItem(
             "phoneNumber",
-            JSON.stringify({ phoneNumber: fullPhoneNumber, verified: false })
+            JSON.stringify({
+              phoneNumber: fullPhoneNumber,
+              verified: false,
+              verificationNeeded: true,
+            })
           );
           setOtpSent(true);
           setErrorMsg("");
         } else if (response.ok && !data.success) {
           localStorage.setItem(
             "phoneNumber",
-            JSON.stringify({ phoneNumber: fullPhoneNumber, verified: true })
+            JSON.stringify({
+              phoneNumber: fullPhoneNumber,
+              verified: true,
+              verificationNeeded: false,
+            })
           );
+          setDisableInteraction(false);
           // Handle the case where the phone is already verified
           setPhoneAlreadyVerified(true);
           setTimeout(() => {
@@ -117,6 +126,15 @@ const PhoneNumberForm = ({ setShowForm }) => {
         setLoading(false);
         console.log(data);
         if (response.ok && data.success) {
+          localStorage.setItem(
+            "phoneNumber",
+            JSON.stringify({
+              phoneNumber: storedPhoneNumber.phoneNumber,
+              verified: true,
+              verificationNeeded: false,
+            })
+          );
+          setDisableInteraction(false);
           setOtpErrorMsg("");
           setVerified(true);
           setTimeout(() => {
@@ -125,18 +143,29 @@ const PhoneNumberForm = ({ setShowForm }) => {
 
           // Update the 'verified' property
           storedPhoneNumber.verified = true;
+          storedPhoneNumber.verificationNeeded = false;
           localStorage.setItem(
             "phoneNumber",
             JSON.stringify(storedPhoneNumber)
           );
           // Perform additional actions on successful OTP verification, e.g., redirecting user
         } else if (response.ok && !data.success) {
+          localStorage.setItem(
+            "phoneNumber",
+            JSON.stringify({
+              phoneNumber: storedPhoneNumber.phoneNumber,
+              verified: true,
+              verificationNeeded: false,
+            })
+          );
+          setDisableInteraction(false);
           setTimeout(() => {
             setShowForm(false);
           }, 5000);
 
           // Update the 'verified' property
           storedPhoneNumber.verified = true;
+          storedPhoneNumber.verificationNeeded = false;
           localStorage.setItem(
             "phoneNumber",
             JSON.stringify(storedPhoneNumber)
@@ -146,6 +175,14 @@ const PhoneNumberForm = ({ setShowForm }) => {
           // Perform additional actions on successful OTP verification, e.g., redirecting user
         } else {
           setOtpErrorMsg(data.message || "Failed to verify OTP.");
+          localStorage.setItem(
+            "phoneNumber",
+            JSON.stringify({
+              phoneNumber: storedPhoneNumber.phoneNumber,
+              verified: false,
+              verificationNeeded: true,
+            })
+          );
         }
       } catch (error) {
         setOtpErrorMsg(
@@ -161,9 +198,9 @@ const PhoneNumberForm = ({ setShowForm }) => {
     <div className="phone-number-form">
       {!otpSent && !phoneAlreadyVerified ? (
         <form className="phoneForm" onSubmit={handleSubmit}>
-          <p>
-            Hey there! Please enter your phone number so we can give you extra
-            help 🙂
+          <p style={{ fontWeight: 700 }}>
+            Hey there! You need to verify your number before continuing with
+            MindyWell
           </p>
           <div className="btn-input-wrapper">
             <ReactIntlTelInput
@@ -193,6 +230,7 @@ const PhoneNumberForm = ({ setShowForm }) => {
             A code was sent to your phone number. Please enter the OTP below:
           </p>
           <input
+            style={{ color: "black" }}
             type="text"
             value={otp}
             onChange={handleOtpChange}
