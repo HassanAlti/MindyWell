@@ -22,6 +22,11 @@ RUN npm run build
 FROM nginx:alpine
 COPY --from=0 /usr/src/app/build /usr/share/nginx/html
 COPY default.conf /etc/nginx/conf.d/default.conf
+# Copy the custom nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy the GeoIP database
+COPY GeoIP.dat /etc/nginx/GeoIP.dat
 EXPOSE 80
 
 # Start nginx
