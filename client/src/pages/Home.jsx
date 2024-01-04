@@ -224,16 +224,21 @@ const Home = () => {
         }),
       });
 
-      const followUpData = await followUpResponse.json();
-      let follows = followUpData.followup;
+      if (followUpResponse.ok) {
+        const followUpData = await followUpResponse.json();
+        let follows = followUpData.followup;
 
-      if (chatLog.length > 10 && !isMatched) {
-        follows[3] = "Match me with a mental health proffesional";
+        if (chatLog.length > 8 && !isMatched) {
+          follows[3] = "Match me with a mental health proffesional";
+        }
+
+        setFollowUpQuestions(follows);
+
+        setReponseFromAPI(false);
+      } else {
+        setFollowUpQuestions([]);
+        return;
       }
-
-      setFollowUpQuestions(follows);
-
-      setReponseFromAPI(false);
     } catch (e) {
       console.error(e);
     }
