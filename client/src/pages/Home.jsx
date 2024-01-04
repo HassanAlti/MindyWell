@@ -19,6 +19,7 @@ const Home = () => {
   const [responseFromAPI, setReponseFromAPI] = useState(false);
   const [userId, setUserId] = useState(null); // Initialize userId as null
   const [showForm, setShowForm] = useState(false);
+  const [disableInteraction, setDisableInteraction] = useState(false);
   const [followUpQuestions, setFollowUpQuestions] = useState([]);
   const [isMatched, setIsMatched] = useState(false);
 
@@ -96,23 +97,47 @@ const Home = () => {
 
     let storedNumber = JSON.parse(localStorage.getItem("phoneNumber"));
 
-    if (!storedNumber) {
+    if (!storedNumber || storedNumber === null) {
       console.log("Phone number not found in localStorage");
-      storedNumber = { phoneNumber: "", verified: false };
-      localStorage.setItem("phoneNumber", JSON.stringify(storedNumber));
+      const numberObj = {
+        phoneNumber: "",
+        verified: false,
+        verificationNeeded: true,
+      };
+      localStorage.setItem("phoneNumber", JSON.stringify(numberObj));
+    } else if (storedNumber.verificationNeeded) {
+      setDisableInteraction(true);
+      setShowForm(true);
     }
 
-    const verified = storedNumber.verified;
+    let verified;
+    let verificationNeeded;
 
-    console.log(storedNumber.phoneNumber + " " + verified);
+    if (storedNumber === null) {
+      verified = false;
+      verificationNeeded = false;
+    } else {
+      verified = storedNumber.verified;
+    }
 
-    if (!verified) {
-      console.log("Timer tiggered, number not verified");
+    if (!verified && !verificationNeeded) {
+      console.log(
+        "Timer tiggered, number not verified, and verification not needed for now"
+      );
       const timer = setTimeout(() => {
+        localStorage.setItem(
+          "phoneNumber",
+          JSON.stringify({
+            ...storedNumber,
+            verified: false,
+            verificationNeeded: true,
+          })
+        );
+        console.log("Timer is Over");
+        setDisableInteraction(true);
         setShowForm(true);
       }, 1000 * 60 * 5);
 
-      // Cleanup function to cancel the timeout if the component unmounts earlier
       return () => clearTimeout(timer);
     } else {
       console.log("Timer not triggered, phone number verified already");
@@ -122,6 +147,10 @@ const Home = () => {
   }, []);
 
   const handleSuggestionClick = (question) => {
+    if (disableInteraction) {
+      alert("Please Verify Your Number First!");
+      return;
+    }
     // Clear the follow-up questions
     setFollowUpQuestions([]);
     console.log(question);
@@ -211,6 +240,11 @@ const Home = () => {
   }
 
   const handleSubmit = async (e) => {
+    if (disableInteraction) {
+      alert("Please Verify Your Number First!");
+      return;
+    }
+
     e.preventDefault();
 
     if (!responseFromAPI) {
@@ -430,6 +464,7 @@ const Home = () => {
             setCurrentChat={setCurrentChat}
             userId={userId}
             setFollowUpQuestions={setFollowUpQuestions}
+            disableInteraction={disableInteraction}
           />
         </aside>
       )}
@@ -482,6 +517,9 @@ const Home = () => {
                                   <div id="botMessage">
                                     <PhoneNumberForm
                                       setShowForm={setShowForm}
+                                      setDisableInteraction={
+                                        setDisableInteraction
+                                      }
                                     />
                                   </div>
                                 </div>
@@ -498,7 +536,7 @@ const Home = () => {
                   </div>
                 </div>
               ))}
-            {followUpQuestions.length > 0 && (
+            {followUpQuestions.length > 0 && !disableInteraction && (
               <div>
                 <h1 className="my-8 text-lg font-bold">Quick Follow-Ups</h1>
                 <div className=" md:p-0 mx-auto w-full md:w-[65%] grid gap-2 grid-cols-2">
@@ -540,12 +578,15 @@ const Home = () => {
           <IntroSection
             onSuggestionClick={handleSuggestionClick}
             currentChat={currentChat}
+            showForm={showForm}
+            setShowForm={setShowForm}
           />
         )}
 
         <form className="promptForm" onSubmit={handleSubmit}>
           <div className="inputPromptWrapper">
             <input
+              disabled={disableInteraction}
               name="inputPrompt"
               id=""
               className="inputPrompttTextarea"
@@ -555,7 +596,11 @@ const Home = () => {
               onChange={(e) => setInputPrompt(e.target.value)}
               autoFocus
             ></input>
-            <button aria-label="form submit" type="submit">
+            <button
+              disabled={disableInteraction}
+              aria-label="form submit"
+              type="submit"
+            >
               <svg
                 fill="#ADACBF"
                 width={15}
