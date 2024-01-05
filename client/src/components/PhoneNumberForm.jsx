@@ -4,7 +4,11 @@ import "../phone.css"; // Make sure this path is correct for your styles
 import ReactIntlTelInput from "react-intl-tel-input-v2";
 
 const PhoneNumberForm = ({ setShowForm, setDisableInteraction }) => {
-  const [phoneInputValue, setPhoneInputValue] = useState({});
+  const [phoneInputValue, setPhoneInputValue] = useState({
+    iso2: "ca",
+    dialCode: "1",
+    phone: "",
+  });
   const [otpSent, setOtpSent] = useState(false);
   const [phoneAlreadyVerified, setPhoneAlreadyVerified] = useState(false);
   const [verified, setVerified] = useState(false);
