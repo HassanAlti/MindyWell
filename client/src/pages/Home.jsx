@@ -228,7 +228,7 @@ const Home = () => {
         const followUpData = await followUpResponse.json();
         let follows = followUpData.followup;
 
-        if (chatLog.length > 8 && !isMatched) {
+        if (chatLog.length > 4 && !isMatched) {
           follows[3] = "Match me with a mental health proffesional";
         }
 
