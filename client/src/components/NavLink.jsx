@@ -1,19 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
-const NavLinks = ({ svg, link, text, setChatLog }) => {
+const NavLinks = ({ svg, link, text }) => {
   return (
-    <Link
-      to={link}
-      target={link && "_blank"}
-      rel="noreferrer"
+    <a
+      href={link} // Changed from 'to' to 'href'
+      target="_blank"
+      rel="noreferrer noopener" // Added noopener for security
       style={{ textDecoration: "none" }}
     >
       <div className="navPrompt">
         {svg}
         <p>{text}</p>
       </div>
-    </Link>
+    </a>
   );
 };
 
