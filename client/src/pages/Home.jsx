@@ -324,7 +324,7 @@ const Home = () => {
     if (parsedData.includes("LINK:")) {
       // Extract the link and related data from the bot response
       let newData = parsedData.replace("LINK:", "").trim();
-      const linkRegex = /(http:\/\/[^\s]+)/;
+      const linkRegex = /(https?:\/\/[^\s]+)/;
       const linkMatch = newData.match(linkRegex);
 
       if (linkMatch && linkMatch[0]) {
