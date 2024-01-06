@@ -319,7 +319,7 @@ const Home = () => {
     if (parsedData.includes("LINK:")) {
       // Extract the link and related data from the bot response
       let newData = parsedData.replace("LINK:", "").trim();
-      const linkRegex = /(http:\/\/[^ ]+)(?=\s|$)/;
+      const linkRegex = /(http:\/\/[^\s]+)/;
       const linkMatch = newData.match(linkRegex);
 
       if (linkMatch && linkMatch[0]) {
@@ -339,20 +339,40 @@ const Home = () => {
           // Await the recommendation result from the recommend function
           const recommendation = await recommend(link);
           console.log(recommendation);
-          setIsMatched(true);
-          const recommendText = newData.replace(
-            "Loading...",
-            "\n" + recommendation + "\n"
-          );
-          setChatLog((prevChatLog) => {
-            const updatedChatLog = prevChatLog.slice(0, -1);
-            updatedChatLog.push({
-              containsLink: true,
-              chatPrompt: question,
-              botMessage: recommendText,
+
+          setTimeout(() => {
+            console.log("Waiting 1 second");
+            setChatLog((prevChatLog) => {
+              // Find the index of the chat log item that contains "Loading..."
+              const indexOfLoading = prevChatLog.findIndex(
+                (chatItem) =>
+                  chatItem.botMessage &&
+                  chatItem.botMessage.includes("Loading...")
+              );
+
+              // Only proceed if we find the "Loading..." chat log item
+              if (indexOfLoading !== -1) {
+                const newChatLog = [...prevChatLog];
+                const botMessage = newChatLog[
+                  indexOfLoading
+                ].botMessage.replace(
+                  "Loading...",
+                  "\n" + recommendation + "\n"
+                );
+                newChatLog[indexOfLoading] = {
+                  ...newChatLog[indexOfLoading],
+                  botMessage: botMessage,
+                  containsLink: true,
+                };
+                return newChatLog;
+              } else {
+                // If not found, just return the previous chat log
+                return prevChatLog;
+              }
             });
-            return updatedChatLog;
-          });
+          }, 1000);
+
+          setIsMatched(true);
         } catch (err) {
           console.error("Failed to get recommendation:", err);
         }

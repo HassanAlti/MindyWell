@@ -232,7 +232,7 @@ app.post("/api/chat", async (req, res) => {
 app.post("/api/therapists", async (req, res) => {
   const clerkUserId = req.body.userId;
 
-  const userPreference = req.query.user_preference;
+  // const userPreference = req.query.user_preference;
   const userIssue = req.query.issue;
 
   const companionKey = {
