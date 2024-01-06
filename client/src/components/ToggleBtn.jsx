@@ -17,7 +17,7 @@ const ToggleBtn = ({ onToggle }) => {
       <div className="button r" id="button-1">
         <input
           type="checkbox"
-          class="checkbox"
+          className="checkbox"
           checked={isOn}
           onChange={handleToggle}
         />

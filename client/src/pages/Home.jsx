@@ -24,6 +24,7 @@ const Home = () => {
   const [followUpQuestions, setFollowUpQuestions] = useState([]);
   const [isMatched, setIsMatched] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
+  const [therapistArr, setTherapistArr] = useState([]);
 
   const [autoPlay, setAutoPlay] = useState(true);
 
@@ -299,7 +300,11 @@ const Home = () => {
 
       if (response.ok) {
         const json = await response.json();
-        const text = json.text.trim();
+        const text = json.therapists.text.trim();
+
+        const therapistArr = json.therapistsArray;
+
+        setTherapistArr(therapistArr);
         return text; // Just return the text
       } else {
         const err = await response.text();
@@ -553,6 +558,7 @@ const Home = () => {
                             response={chat.botMessage}
                             chatLogRef={chatLogRef}
                             containsLink={chat.containsLink}
+                            therapistArr={therapistArr}
                           />
 
                           {showForm && idx === chatLog.length - 1 && (
