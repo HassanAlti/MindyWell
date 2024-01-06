@@ -24,7 +24,7 @@ const NavLinksContainer = ({ chatLog, setChatLog }) => {
           </svg>
         }
         text="Privacy Policy"
-        link="https://mindywell.com/privacy"
+        link="/privacy"
       />
     </div>
   );
