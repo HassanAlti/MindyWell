@@ -59,6 +59,10 @@ app.use(
   })
 );
 
+// Correct the path to serve static files from the 'public' directory
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+app.use(express.static(path.join(__dirname, "../../../../public")));
+
 app.get("/api/get-ip-location", async (req, res) => {
   try {
     const userIP =
@@ -90,6 +94,10 @@ app.get("/therapists", async (req, res) => {
   }
 
   res.render("therapists.ejs", { therapistsArray });
+});
+
+app.get("/privacy", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../../public", "privacy.html"));
 });
 
 app.post("/api/chat", async (req, res) => {
