@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const TTSButton = ({ botResponse }) => {
+const TTSButton = ({ botResponse, autoPlay, userInteracted }) => {
   // State to track if the audio is playing
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState(null);
+  // Ref to track if component has mounted
+
+  useEffect(() => {
+    if (userInteracted) {
+      if (autoPlay) {
+        startSpeech();
+      }
+    }
+  }, [botResponse]);
 
   const startSpeech = async () => {
     if (isPlaying) return;

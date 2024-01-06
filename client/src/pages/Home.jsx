@@ -7,6 +7,7 @@ import Loading from "../components/Loading";
 import NavContent from "../components/NavContent";
 import PhoneNumberForm from "../components/PhoneNumberForm";
 import TTSButton from "../components/TTSButton";
+import ToggleBtn from "../components/ToggleBtn";
 
 import "../tailwind.css";
 
@@ -22,6 +23,13 @@ const Home = () => {
   const [disableInteraction, setDisableInteraction] = useState(false);
   const [followUpQuestions, setFollowUpQuestions] = useState([]);
   const [isMatched, setIsMatched] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
+
+  const [autoPlay, setAutoPlay] = useState(true);
+
+  const handleToggle = (isOn) => {
+    setAutoPlay(!isOn);
+  };
 
   const chatLogRef = useRef(null);
   const followUpRef = useRef(null);
@@ -165,6 +173,8 @@ const Home = () => {
 
     // Programmatically submit the form
     handleSubmitProgrammatic(question);
+
+    setUserInteracted(true);
   };
 
   const handleSubmitProgrammatic = (question) => {
@@ -174,9 +184,12 @@ const Home = () => {
     callAPI(question);
 
     setInputPrompt("");
+
+    setUserInteracted(true);
   };
 
   async function callAPI(question) {
+    setUserInteracted(true);
     try {
       setFollowUpQuestions([]);
       const response = await fetch("/api/chat", {
@@ -251,6 +264,8 @@ const Home = () => {
     }
 
     e.preventDefault();
+
+    setUserInteracted(true);
 
     if (!responseFromAPI) {
       if (inputPrompt.trim() !== "") {
@@ -508,13 +523,18 @@ const Home = () => {
                       <Avatar bg="#11a27f" className="openaiSVG"></Avatar>
                       {chat.botMessage ? (
                         <div id="botMessage">
-                          <TTSButton botResponse={chat.botMessage} />
+                          <TTSButton
+                            botResponse={chat.botMessage}
+                            autoPlay={autoPlay}
+                            userInteracted={userInteracted}
+                          />
 
                           <BotResponse
                             response={chat.botMessage}
                             chatLogRef={chatLogRef}
                             containsLink={chat.containsLink}
                           />
+
                           {showForm && idx === chatLog.length - 1 && (
                             <div className="chatLog">
                               <div className="botMessageMainContainer">
@@ -589,6 +609,10 @@ const Home = () => {
         )}
 
         <form className="promptForm" onSubmit={handleSubmit}>
+          {chatLog.length > 0 && !disableInteraction && (
+            <ToggleBtn onToggle={handleToggle} />
+          )}
+
           <div className="inputPromptWrapper">
             <input
               disabled={disableInteraction}
