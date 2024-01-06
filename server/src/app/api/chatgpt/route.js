@@ -86,16 +86,6 @@ app.get("/api/get-ip-location", async (req, res) => {
   }
 });
 
-app.get("/therapists", async (req, res) => {
-  let therapistsArray;
-
-  if (req.session.therapists) {
-    therapistsArray = req.session.therapists;
-  }
-
-  res.render("therapists.ejs", { therapistsArray });
-});
-
 app.get("/privacy", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../../public", "privacy.html"));
 });
@@ -308,11 +298,7 @@ app.post("/api/therapists", async (req, res) => {
     companionKey
   );
 
-  req.session.therapists = therapistsArray;
-
-  console.log("THE ABSOLUTE FINAL RESULT");
-
-  res.send(therapists);
+  res.send({ therapists, therapistsArray });
 });
 
 app.post("/api/speech", async (req, res) => {
