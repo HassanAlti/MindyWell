@@ -206,13 +206,46 @@ const Home = () => {
 
       const parsedData = data.botResponse;
 
-      if (
-        parsedData.includes("CODE99023") ||
-        parsedData.includes("HELP5587") ||
-        parsedData.includes("LINK:")
-      ) {
+      if (parsedData.includes("HELP5587") || parsedData.includes("LINK:")) {
         await handleBotResponse(question, parsedData);
       } else {
+        if (
+          parsedData.includes("CODE99023") ||
+          parsedData.includes("in-person") ||
+          parsedData.includes("in person")
+        ) {
+          if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+              async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                  const geoResponse = await fetch(
+                    `/api/user-location?latitude=${latitude}&longitude=${longitude}`,
+                    {
+                      method: "POST",
+                    }
+                  );
+                  const geoData = await geoResponse.json();
+                  localStorage.setItem(
+                    "userLocation",
+                    JSON.stringify({
+                      locationStr: geoData.formattedLocation,
+                      type: "geolocation",
+                    })
+                  );
+                  console.log(geoData);
+                } catch (error) {
+                  console.error(error);
+                }
+              },
+              (error) => {
+                console.error("Error getting user location:", error.message);
+              }
+            );
+          } else {
+            console.error("Geolocation is not supported by this browser.");
+          }
+        }
         setChatLog([
           ...chatLog,
           {
@@ -381,50 +414,6 @@ const Home = () => {
         }
       } else {
         console.log("No valid link found in the bot output");
-      }
-    } else if (parsedData.includes("CODE99023")) {
-      // Handle geolocation related operations here
-      if (parsedData.includes("CODE99023")) {
-        parsedData = parsedData.replace("CODE99023", "").trim();
-      }
-      setChatLog([
-        ...chatLog,
-        {
-          chatPrompt: question,
-          botMessage: parsedData,
-        },
-      ]);
-
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-            try {
-              const geoResponse = await fetch(
-                `/api/user-location?latitude=${latitude}&longitude=${longitude}`,
-                {
-                  method: "POST",
-                }
-              );
-              const geoData = await geoResponse.json();
-              localStorage.setItem(
-                "userLocation",
-                JSON.stringify({
-                  locationStr: geoData.formattedLocation,
-                  type: "geolocation",
-                })
-              );
-              console.log(geoData);
-            } catch (error) {
-              console.error(error);
-            }
-          },
-          (error) => {
-            console.error("Error getting user location:", error.message);
-          }
-        );
-      } else {
-        console.error("Geolocation is not supported by this browser.");
       }
     } else if (parsedData.includes("HELP5587")) {
       const newData = parsedData.replace("HELP5587", "").trim();
