@@ -208,8 +208,6 @@ const Home = () => {
 
       if (
         parsedData.includes("CODE99023") ||
-        parsedData.includes("in-person") ||
-        parsedData.includes("in person") ||
         parsedData.includes("HELP5587") ||
         parsedData.includes("LINK:")
       ) {
@@ -384,12 +382,7 @@ const Home = () => {
       } else {
         console.log("No valid link found in the bot output");
       }
-    }
-    if (
-      parsedData.includes("CODE99023") ||
-      parsedData.includes("in-person") ||
-      parsedData.includes("in person")
-    ) {
+    } else if (parsedData.includes("CODE99023")) {
       // Handle geolocation related operations here
       if (parsedData.includes("CODE99023")) {
         parsedData = parsedData.replace("CODE99023", "").trim();
@@ -433,8 +426,7 @@ const Home = () => {
       } else {
         console.error("Geolocation is not supported by this browser.");
       }
-    }
-    if (parsedData.includes("HELP5587")) {
+    } else if (parsedData.includes("HELP5587")) {
       const newData = parsedData.replace("HELP5587", "").trim();
       setChatLog([
         ...chatLog,

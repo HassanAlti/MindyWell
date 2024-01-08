@@ -1,14 +1,39 @@
-version: '3.8'
+# version: '3.8'
+# services:
+#   server:
+#     build:
+#       context: ./server
+#     depends_on:
+#       - mongodb
+#       - redis
+#     environment:
+#       - MONGO_URI=mongodb://mongodb:27017/yourdbname
+#       - REDIS_URL=redis://redis:6379
+
+#   client:
+#     build:
+#       context: ./client
+#     ports:
+#       - "80:80"
+#     depends_on:
+#       - server
+
+#   mongodb:
+#     image: mongo
+#     ports:
+#       - "27017:27017"
+
+#   redis:
+#     image: redis
+#     ports:
+#       - "6379:6379"
+
+version: "3.8"
 services:
   server:
     build:
       context: ./server
-    depends_on:
-      - mongodb
-      - redis
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/yourdbname
-      - REDIS_URL=redis://redis:6379
+    # Removed all MongoDB and Redis references
 
   client:
     build:
@@ -17,13 +42,3 @@ services:
       - "80:80"
     depends_on:
       - server
-
-  mongodb:
-    image: mongo
-    ports:
-      - "27017:27017"
-
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
