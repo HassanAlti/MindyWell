@@ -7,7 +7,6 @@ import Loading from "../components/Loading";
 import NavContent from "../components/NavContent";
 import PhoneNumberForm from "../components/PhoneNumberForm";
 import TTSButton from "../components/TTSButton";
-import ToggleBtn from "../components/ToggleBtn";
 
 import "../tailwind.css";
 
@@ -26,9 +25,12 @@ const Home = () => {
   const [userInteracted, setUserInteracted] = useState(false);
   const [therapistArr, setTherapistArr] = useState([]);
 
-  const [autoPlay, setAutoPlay] = useState(true);
+  const [autoPlay, setAutoPlay] = useState(
+    !JSON.parse(localStorage.getItem("autoPlayToggle")) || true
+  );
 
   const handleToggle = (isOn) => {
+    console.log("HANDLE TOGGLE");
     setAutoPlay(!isOn);
   };
 
@@ -214,6 +216,7 @@ const Home = () => {
           parsedData.includes("in-person") ||
           parsedData.includes("in person")
         ) {
+          parsedData.replace("CODE99023", "").trim();
           if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
               async (position) => {
@@ -376,37 +379,33 @@ const Home = () => {
           const recommendation = await recommend(link);
           console.log(recommendation);
 
-          setTimeout(() => {
-            console.log("Waiting 1 second");
-            setChatLog((prevChatLog) => {
-              // Find the index of the chat log item that contains "Loading..."
-              const indexOfLoading = prevChatLog.findIndex(
-                (chatItem) =>
-                  chatItem.botMessage &&
-                  chatItem.botMessage.includes("Loading...")
-              );
+          console.log("Waiting 1 second");
+          setChatLog((prevChatLog) => {
+            // Find the index of the chat log item that contains "Loading..."
+            const indexOfLoading = prevChatLog.findIndex(
+              (chatItem) =>
+                chatItem.botMessage &&
+                chatItem.botMessage.includes("Loading...")
+            );
 
-              // Only proceed if we find the "Loading..." chat log item
-              if (indexOfLoading !== -1) {
-                const newChatLog = [...prevChatLog];
-                const botMessage = newChatLog[
-                  indexOfLoading
-                ].botMessage.replace(
-                  "Loading...",
-                  "\n" + recommendation + "\n"
-                );
-                newChatLog[indexOfLoading] = {
-                  ...newChatLog[indexOfLoading],
-                  botMessage: botMessage,
-                  containsLink: true,
-                };
-                return newChatLog;
-              } else {
-                // If not found, just return the previous chat log
-                return prevChatLog;
-              }
-            });
-          }, 1000);
+            // Only proceed if we find the "Loading..." chat log item
+            if (indexOfLoading !== -1) {
+              const newChatLog = [...prevChatLog];
+              const botMessage = newChatLog[indexOfLoading].botMessage.replace(
+                "Loading...",
+                "\n" + recommendation + "\n"
+              );
+              newChatLog[indexOfLoading] = {
+                ...newChatLog[indexOfLoading],
+                botMessage: botMessage,
+                containsLink: true,
+              };
+              return newChatLog;
+            } else {
+              // If not found, just return the previous chat log
+              return prevChatLog;
+            }
+          });
 
           setIsMatched(true);
         } catch (err) {
@@ -460,6 +459,8 @@ const Home = () => {
                 setCurrentChat={setCurrentChat}
                 userId={userId}
                 setFollowUpQuestions={setFollowUpQuestions}
+                disableInteraction={disableInteraction}
+                handleToggle={handleToggle}
               />
             </div>
           )}
@@ -491,6 +492,7 @@ const Home = () => {
             userId={userId}
             setFollowUpQuestions={setFollowUpQuestions}
             disableInteraction={disableInteraction}
+            handleToggle={handleToggle}
           />
         </aside>
       )}
@@ -616,10 +618,6 @@ const Home = () => {
         )}
 
         <form className="promptForm" onSubmit={handleSubmit}>
-          {chatLog.length > 0 && !disableInteraction && (
-            <ToggleBtn onToggle={handleToggle} />
-          )}
-
           <div className="inputPromptWrapper">
             <input
               disabled={disableInteraction}

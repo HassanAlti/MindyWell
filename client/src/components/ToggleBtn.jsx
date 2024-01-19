@@ -2,17 +2,20 @@ import React, { useState } from "react";
 import "../toggle.css";
 
 const ToggleBtn = ({ onToggle }) => {
-  const [isOn, setIsOn] = useState(false);
+  const initialState =
+    !JSON.parse(localStorage.getItem("autoPlayToggle")) || false;
+  const [isOn, setIsOn] = useState(initialState);
 
   // Function to handle toggle change
   const handleToggle = () => {
     const newState = !isOn;
     setIsOn(newState);
-    onToggle(newState); // Invoke the callback with the new state
+    localStorage.setItem("autoPlayToggle", JSON.stringify(newState)); // Set in localStorage on toggle
+    onToggle(newState);
   };
 
   return (
-    <div style={{ width: "8rem", marginTop: "3.5rem" }}>
+    <div style={{ marginBottom: "25%" }}>
       <span style={{ fontWeight: "600" }}>Auto-Play Audio</span>
       <div className="button r" id="button-1">
         <input

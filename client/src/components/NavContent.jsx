@@ -11,6 +11,8 @@ const NavContent = ({
   setCurrentChat,
   userId,
   setFollowUpQuestions,
+  disableInteraction,
+  handleToggle,
 }) => {
   const [convoHistory, setConvoHistory] = useState([]);
 
@@ -121,7 +123,12 @@ const NavContent = ({
           />
         ))}
       </div>
-      <NavLinksContainer chatLog={chatLog} setChatLog={setChatLog} />
+      <NavLinksContainer
+        chatLog={chatLog}
+        setChatLog={setChatLog}
+        disableInteraction={disableInteraction}
+        handleToggle={handleToggle}
+      />
     </>
   );
 };

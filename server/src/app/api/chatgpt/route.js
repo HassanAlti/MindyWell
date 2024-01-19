@@ -1,6 +1,7 @@
 import express from "express";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import nodemailer from "nodemailer";
 
 import dotenv from "dotenv";
 
@@ -332,6 +333,35 @@ app.post("/api/speech", async (req, res) => {
     res.send("Error reading file");
   }
   // Handle the error as needed
+});
+
+// Configure nodemailer to use Gmail
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "alti646@gmail.com", // Your Gmail address
+    pass: "uwbc acun afbo kewj", // Your Gmail password or App password
+  },
+});
+
+// Endpoint to send email
+app.post("/api/send-email", async (req, res) => {
+  let { fullName, email, message } = req.body;
+
+  let mailOptions = {
+    from: "alti646@gmail.com", // Your Gmail address
+    to: process.env.EMAIL, // Where you want to receive the emails
+    subject: "MindyWell message from contact form",
+    text: `Message from: ${fullName} <${email}>\n\n${message}`,
+    html: `<strong>Message from:</strong> ${fullName} <${email}><br><br>${message}`,
+  };
+
+  try {
+    let info = await transporter.sendMail(mailOptions);
+    res.status(200).send({ message: "Email sent successfully", info: info });
+  } catch (error) {
+    res.status(500).send({ message: "Error in sending email", error: error });
+  }
 });
 
 // Route To Send OTP

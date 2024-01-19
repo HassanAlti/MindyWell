@@ -1,10 +1,20 @@
 import React from "react";
 import NavLinks from "./NavLink";
+import Contact from "./Contact";
+import ToggleBtn from "./ToggleBtn";
 
-const NavLinksContainer = ({ chatLog, setChatLog }) => {
+const NavLinksContainer = ({
+  chatLog,
+  setChatLog,
+  disableInteraction,
+  handleToggle,
+}) => {
   return (
     <div className="navLinks" style={{ position: "absolute", bottom: "10px" }}>
-      {chatLog.length > 0 && <NavLinks setChatLog={setChatLog} />}
+      {chatLog.length > 0 && !disableInteraction && (
+        <ToggleBtn onToggle={handleToggle} />
+      )}
+
       <NavLinks
         svg={
           <svg
@@ -26,6 +36,7 @@ const NavLinksContainer = ({ chatLog, setChatLog }) => {
         text="Privacy Policy"
         link="/privacy"
       />
+      <Contact />
     </div>
   );
 };

@@ -51,7 +51,7 @@ nav {
 .navPromptWrapper {
   border-bottom: 1px solid #ffffff33;
   padding: 10px;
-  height: calc(115vh - 250px);
+  height: calc(115vh - 370px);
   overflow-y: auto;
 }
 .navPrompt {
@@ -220,6 +220,19 @@ nav svg {
 .userSVG {
   transform: scale(0.6);
 }
+
+.btn {
+  color: #ffffff;
+  background-color: rgb(84, 55, 219);
+  border-color: rgb(30, 7, 133);
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-left: 10px;
+}
+
 .botMessageMainContainer {
   width: 100%;
   background-color: #444654;

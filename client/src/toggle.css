@@ -14,13 +14,15 @@
   height: 36px;
   /* margin: -20px auto 0 auto; */
   overflow: hidden;
-  margin-left: 2rem;
+  /* margin-left: 2rem;
+   */
+  left: 35%;
 }
 
 .button.r,
 .button.r .layer {
   border-radius: 100px;
-  margin-top: 3px;
+  /* margin-top: 3px; */
 }
 
 .button.b2 {
