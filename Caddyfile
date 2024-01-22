@@ -1,0 +1,16 @@
+mindywell.com {
+
+    # Root directory and file server for static files
+    root * /usr/share/caddy
+    file_server
+    # Rate limiting configuration
+    route /api/* {
+        rate_limit {remote.ip} 15r/m
+        #rate_limit {query.id} 15r/m
+        # The rest of your route configuration...
+    }
+    # Reverse proxy for /api/ path
+    reverse_proxy /api/* server:4242
+
+}
+

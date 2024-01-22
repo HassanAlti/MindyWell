@@ -1,0 +1,30 @@
+# Client Dockerfile
+
+# Use the official Node.js 18 image as a parent image
+FROM node:18
+
+# Set the working directory in the Docker container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json (if available) to the working directory
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Bundle app source
+COPY . .
+
+# Build the React app
+RUN npm run build
+
+# Use Caddy to serve the React app
+FROM caddy:2-alpine
+COPY --from=0 /usr/src/app/build /usr/share/caddy
+
+# Expose ports 80 and 443
+EXPOSE 80 443
+
+# Start Caddy
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
+

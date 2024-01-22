@@ -87,7 +87,7 @@ app.get("/api/get-ip-location", async (req, res) => {
   }
 });
 
-app.get("/privacy", (req, res) => {
+app.get("/api/privacy", (req, res) => {
   res.sendFile(path.join(__dirname, "../../../../public", "privacy.html"));
 });
 
