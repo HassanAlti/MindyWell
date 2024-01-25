@@ -1,7 +1,8 @@
 # Client Dockerfile
 
+# Stage 1: Build the React application
 # Use the official Node.js 18 image as a parent image
-FROM node:18
+FROM node:18 AS build-stage
 
 # Set the working directory in the Docker container
 WORKDIR /usr/src/app
@@ -10,7 +11,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN NODE_OPTIONS=--max-old-space-size=4096 npm install
 
 # Bundle app source
 COPY . .
@@ -18,11 +19,28 @@ COPY . .
 # Build the React app
 RUN npm run build
 
-# Use nginx to serve the React app
-FROM nginx:alpine
-COPY --from=0 /usr/src/app/build /usr/share/nginx/html
-COPY default.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+# Stage 2: Build a custom Caddy with plugins
+FROM caddy:2-builder-alpine AS caddy-builder
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Build Caddy with additional plugins
+RUN xcaddy build \
+    --with github.com/RussellLuo/caddy-ext/ratelimit
+
+# Stage 3: Set up the final image
+FROM caddy:2-alpine
+
+# Copy the custom built Caddy from the builder stage
+COPY --from=caddy-builder /usr/bin/caddy /usr/bin/caddy
+
+# Copy the built files from the build-stage
+COPY --from=build-stage /usr/src/app/build /usr/share/caddy
+
+# Set the Caddyfile
+COPY Caddyfile /etc/caddy/Caddyfile
+
+# Expose ports 80 and 443 for HTTP and HTTPS traffic
+EXPOSE 80 443
+
+# Start Caddy
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
+

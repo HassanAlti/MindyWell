@@ -5,6 +5,8 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
+    "@fortawesome/react-fontawesome": "",
+    "@fortawesome/free-solid-svg-icons": "",
     "@testing-library/user-event": "^13.5.0",
     "firebase": "^9.17.2",
     "intl-tel-input": "^18.3.3",

@@ -34,7 +34,7 @@ const NavLinksContainer = ({
           </svg>
         }
         text="Privacy Policy"
-        link="/privacy"
+        link="/api/privacy"
       />
       <Contact />
     </div>

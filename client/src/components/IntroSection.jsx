@@ -14,7 +14,7 @@ const IntroSection = ({
 
   useEffect(() => {
     let index = 1;
-    const message = "The Ultimate Mental Health Guide";
+    const message = "Navigating Life with AI and Expert Care";
     const intervalId = setInterval(() => {
       if (!isPrinting) {
         clearInterval(intervalId);

@@ -1,0 +1,6 @@
+mindywell.com
+
+# Root directory and file server configuration
+root * /usr/share/caddy
+file_server
+
