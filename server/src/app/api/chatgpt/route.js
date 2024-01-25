@@ -339,8 +339,8 @@ app.post("/api/speech", async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "alti646@gmail.com", // Your Gmail address
-    pass: "uwbc acun afbo kewj", // Your Gmail password or App password
+    user: "alti646@gmail.com", 
+    pass: process.env.EMAIL_PASS, 
   },
 });
 
@@ -349,7 +349,7 @@ app.post("/api/send-email", async (req, res) => {
   let { fullName, email, message } = req.body;
 
   let mailOptions = {
-    from: "alti646@gmail.com", // Your Gmail address
+    from: "alti646@gmail.com", 
     to: process.env.EMAIL, // Where you want to receive the emails
     subject: "MindyWell message from contact form",
     text: `Message from: ${fullName} <${email}>\n\n${message}`,
