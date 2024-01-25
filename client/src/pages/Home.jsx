@@ -25,13 +25,15 @@ const Home = () => {
   const [userInteracted, setUserInteracted] = useState(false);
   const [therapistArr, setTherapistArr] = useState([]);
 
-  const [autoPlay, setAutoPlay] = useState(
-    !JSON.parse(localStorage.getItem("autoPlayToggle")) || true
-  );
+  const [autoPlay, setAutoPlay] = useState(() => {
+    const storedState = localStorage.getItem("autoPlayToggle");
+    // Default to true if nothing is stored yet
+    return storedState !== null ? JSON.parse(storedState) : true;
+  });
 
-  const handleToggle = (isOn) => {
+  const handleToggle = (newValue) => {
     console.log("HANDLE TOGGLE");
-    setAutoPlay(!isOn);
+    setAutoPlay(newValue);
   };
 
   const chatLogRef = useRef(null);

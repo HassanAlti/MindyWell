@@ -1,4 +1,4 @@
-mindywell.com {
+localhost {
 
     # Root directory and file server for static files
     root * /usr/share/caddy

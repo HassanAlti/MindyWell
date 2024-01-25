@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from "react";
 
-const TTSButton = ({ botResponse }) => {
+const TTSButton = ({ botResponse, autoPlay, userInteracted }) => {
+  // State to track if the audio is playing
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState(null);
+  // Ref to track if component has mounted
 
   useEffect(() => {
-    // Cleanup function to handle audio object and revoke object URL
-    return () => {
-      if (audio) {
-        audio.pause();
-        URL.revokeObjectURL(audio.src);
+    if (userInteracted) {
+      if (autoPlay) {
+        startSpeech();
       }
-    };
-  }, [audio]);
+    }
+  }, [botResponse]);
 
   const startSpeech = async () => {
     if (isPlaying) return;
 
     setIsPlaying(true);
-
+    // Fetch the speech audio from the server
     try {
-      const response = await fetch("/api/speech", {
+      const response = await fetch("http://localhost:4242/api/speech", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,17 +31,15 @@ const TTSButton = ({ botResponse }) => {
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
 
-      const newAudio = new Audio(url);
-      newAudio.addEventListener("ended", () => {
+      const audioObj = new Audio(url);
+      audioObj.addEventListener("ended", () => {
         setIsPlaying(false);
-        URL.revokeObjectURL(url); // Revoke URL when done
       });
 
-      setAudio(newAudio);
-      newAudio.play();
+      setAudio(audioObj);
+      audioObj.play();
     } catch (e) {
-      console.error("Error playing speech:", e);
-      alert("Error playing speech. Please try again."); // User-friendly error message
+      console.error(e);
       setIsPlaying(false);
     }
   };
@@ -57,11 +55,17 @@ const TTSButton = ({ botResponse }) => {
     <div className="absolute -top-4">
       <div className="flex w-full items-center justify-center gap-2">
         <button
-          aria-label={isPlaying ? "Stop speech" : "Play speech"} // Accessibility improvement
-          className={`tts-button flex h-7 w-20 items-center rounded-full bg-backgroundColor2 px-3 text-sm font-light text-white ${
+          className={`tts-button tts-button flex h-7 w-20 items-center rounded-full bg-backgroundColor2 px-3 text-sm font-light text-white ${
             isPlaying ? "ri-stop-fill" : "ri-volume-up-line"
           }`}
-          onClick={() => (isPlaying ? stopSpeech() : startSpeech())}
+          onClick={() => {
+            if (isPlaying) {
+              stopSpeech();
+            } else {
+              // For this example, assume 'someTextToSpeak' is available
+              startSpeech();
+            }
+          }}
         >
           <svg
             className="mx-auto"
@@ -75,6 +79,7 @@ const TTSButton = ({ botResponse }) => {
           >
             <path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"></path>
           </svg>
+          <audio></audio>
         </button>
       </div>
     </div>
@@ -82,4 +87,3 @@ const TTSButton = ({ botResponse }) => {
 };
 
 export default TTSButton;
-
