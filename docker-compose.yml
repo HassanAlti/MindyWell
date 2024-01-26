@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   server:
+    restart: always
     build:
       context: ./server
     # Uncomment and configure the following lines if you need these services

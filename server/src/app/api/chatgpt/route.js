@@ -302,6 +302,7 @@ app.post("/api/therapists", async (req, res) => {
   res.send({ therapists, therapistsArray });
 });
 
+//
 app.post("/api/speech", async (req, res) => {
   const apiUrl = "https://api.openai.com/v1/audio/speech";
 
@@ -324,17 +325,19 @@ app.post("/api/speech", async (req, res) => {
   try {
     const response = await axios.post(apiUrl, requestData, config);
 
+    // Set the Content-Type header for the audio file
+    res.setHeader('Content-Type', 'audio/mpeg');
     res.status(200).send(response.data);
   } catch (error) {
     console.error(
       "Error:",
       error.response ? error.response.data : error.message
     );
-    res.send("Error reading file");
+    res.status(500).send("Error processing the request");
   }
-  // Handle the error as needed
 });
 
+//
 // Configure nodemailer to use Gmail
 const transporter = nodemailer.createTransport({
   service: "gmail",

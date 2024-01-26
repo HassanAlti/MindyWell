@@ -2,19 +2,15 @@ import React, { useState, useEffect } from "react";
 import "../toggle.css";
 
 const ToggleBtn = ({ onToggle }) => {
-  // Retrieve the initial state from localStorage and if it doesn't exist then default to true (autoplay on)
   const [isOn, setIsOn] = useState(() => {
     const storedState = localStorage.getItem("autoPlayToggle");
-    // If the storedState is null, it means the user hasn't toggled the button before and we default to true.
     return storedState !== null ? JSON.parse(storedState) : true;
   });
 
   useEffect(() => {
-    // Update the state in the parent component to reflect the current state
     onToggle(isOn);
-  }, []); // This will run only once when the component mounts
+  }, [isOn]); // Include isOn in the dependency array
 
-  // Function to handle toggle change
   const handleToggle = () => {
     const newState = !isOn;
     setIsOn(newState);
@@ -29,8 +25,9 @@ const ToggleBtn = ({ onToggle }) => {
         <input
           type="checkbox"
           className="checkbox"
-          checked={!isOn} // The checkbox is checked when isOn is false
+          checked={isOn} // Changed to match the standard UI pattern
           onChange={handleToggle}
+          aria-label="Auto-play audio toggle" // Added for accessibility
         />
         <div className="knobs"></div>
         <div className="layer"></div>
@@ -40,3 +37,4 @@ const ToggleBtn = ({ onToggle }) => {
 };
 
 export default ToggleBtn;
+
