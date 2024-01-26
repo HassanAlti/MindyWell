@@ -1,5 +1,4 @@
 import express from "express";
-import session from "express-session";
 import MongoStore from "connect-mongo";
 import nodemailer from "nodemailer";
 
@@ -49,16 +48,6 @@ const client = twilio(
 );
 
 app.use(cors());
-
-app.use(
-  session({
-    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
-    saveUninitialized: false,
-    cookie: { maxAge: 86400000 },
-    resave: true,
-    secret: "keyboard cat",
-  })
-);
 
 // Correct the path to serve static files from the 'public' directory
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -339,8 +328,8 @@ app.post("/api/speech", async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "alti646@gmail.com", 
-    pass: process.env.EMAIL_PASS, 
+    user: "alti646@gmail.com",
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -349,7 +338,7 @@ app.post("/api/send-email", async (req, res) => {
   let { fullName, email, message } = req.body;
 
   let mailOptions = {
-    from: "alti646@gmail.com", 
+    from: "alti646@gmail.com",
     to: process.env.EMAIL, // Where you want to receive the emails
     subject: "MindyWell message from contact form",
     text: `Message from: ${fullName} <${email}>\n\n${message}`,
@@ -368,8 +357,6 @@ app.post("/api/send-email", async (req, res) => {
 app.post("/api/send-otp", async (req, res) => {
   console.log("Send otp was called");
   const phoneNumber = req.body.phoneNumber;
-
-  req.session.phoneNumber = phoneNumber;
 
   try {
     // Check if the phone number is already verified
@@ -482,17 +469,11 @@ app.post("/api/user-location", async (req, res) => {
 });
 
 app.get("/api/getId", async (req, res) => {
-  if (!req.session.userId) {
-    console.log("NOT FOUND IN SESSIOn");
-    const min = 1000000000;
-    const max = 9999999999;
-    const userId = Math.floor(Math.random() * (max - min + 1)) + min;
-    req.session.userId = userId;
-    res.send({ userId: req.session.userId });
-  } else {
-    console.log("userId found in session");
-    res.send({ userId: req.session.userId });
-  }
+  const min = 1000000000;
+  const max = 9999999999;
+  const userId = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  res.send({ userId });
 });
 
 app.post("/api/keys", async (req, res) => {
